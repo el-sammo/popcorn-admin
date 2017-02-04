@@ -33,26 +33,6 @@
 
 
 		///
-		// Areas
-		///
-
-		$routeProvider.when('/areas', {
-			controller: 'AreasListController',
-			templateUrl: '/templates/areasList.html'
-		});
-
-		$routeProvider.when('/areas/add', {
-			controller: 'AreasAddController',
-			templateUrl: '/templates/areasForm.html'
-		});
-
-		$routeProvider.when('/areas/edit/:id', {
-			controller: 'AreasEditController',
-			templateUrl: '/templates/areasForm.html'
-		});
-
-
-		///
 		// Customers
 		///
 
@@ -123,26 +103,6 @@
 
 
 		///
-		// Hotels
-		///
-
-		$routeProvider.when('/hotels', {
-			controller: 'HotelsListController',
-			templateUrl: '/templates/hotelsList.html'
-		});
-
-		$routeProvider.when('/hotels/add/:id', {
-			controller: 'HotelsAddController',
-			templateUrl: '/templates/hotelsForm.html'
-		});
-
-		$routeProvider.when('/hotels/edit/:id', {
-			controller: 'HotelsEditController',
-			templateUrl: '/templates/hotelsForm.html'
-		});
-
-
-		///
 		// Messaging
 		///
 
@@ -188,26 +148,6 @@
 
 
 		///
-		// Restaurants
-		///
-
-		$routeProvider.when('/restaurants', {
-			controller: 'RestaurantsListController',
-			templateUrl: '/templates/list.html'
-		});
-
-		$routeProvider.when('/restaurants/add/:id', {
-			controller: 'RestaurantsAddController',
-			templateUrl: '/templates/restaurantsForm.html'
-		});
-
-		$routeProvider.when('/restaurants/edit/:id', {
-			controller: 'RestaurantsEditController',
-			templateUrl: '/templates/restaurantsForm.html'
-		});
-
-
-		///
 		// Shifts
 		///
 
@@ -248,42 +188,42 @@
 
 
 		///
-		// Menus
+		// Categories
 		///
 
-		$routeProvider.when('/menus/:id', {
-			controller: 'MenusListController',
-			templateUrl: '/templates/menusList.html'
+		$routeProvider.when('/categories/:id', {
+			controller: 'CategoriesListController',
+			templateUrl: '/templates/categoriesList.html'
 		});
 
-		$routeProvider.when('/menus/add/:id', {
-			controller: 'MenusAddController',
-			templateUrl: '/templates/menusForm.html'
+		$routeProvider.when('/categories/add/:id', {
+			controller: 'CategoriesAddController',
+			templateUrl: '/templates/categoriesForm.html'
 		});
 
-		$routeProvider.when('/menus/edit/:id', {
-			controller: 'MenusEditController',
-			templateUrl: '/templates/menusForm.html'
+		$routeProvider.when('/categories/edit/:id', {
+			controller: 'CategoriesEditController',
+			templateUrl: '/templates/categoriesForm.html'
 		});
 
 
 		///
-		// Items
+		// Popcorn
 		///
 
-		$routeProvider.when('/items/:id', {
-			controller: 'ItemsListController',
-			templateUrl: '/templates/itemsList.html'
+		$routeProvider.when('/popcorn/:id', {
+			controller: 'PopcornListController',
+			templateUrl: '/templates/popcornList.html'
 		});
 
-		$routeProvider.when('/items/add/:id', {
-			controller: 'ItemsAddController',
-			templateUrl: '/templates/itemsForm.html'
+		$routeProvider.when('/popcorn/add/:id', {
+			controller: 'PopcornAddController',
+			templateUrl: '/templates/popcornForm.html'
 		});
 
-		$routeProvider.when('/items/edit/:id', {
-			controller: 'ItemsEditController',
-			templateUrl: '/templates/itemsForm.html'
+		$routeProvider.when('/popcorn/edit/:id', {
+			controller: 'PopcornEditController',
+			templateUrl: '/templates/popcornForm.html'
 		});
 
 
@@ -1473,186 +1413,6 @@
 
 
 	///
-	// Controllers: Areas
-	///
-
-	app.config(function(httpInterceptorProvider) {
-		httpInterceptorProvider.register(/^\/areas/);
-	});
-
-	app.factory('areaSchema', function() {
-		function nameTransform(area) {
-			if(! area || ! area.name || area.name.length < 1) {
-				return 'area-name';
-			}
-			return (area.name
-				.replace(/[^a-zA-Z ]/g, '')
-				.replace(/ /g, '-')
-				.toLowerCase()
-			);
-		}
-
-		var service = {
-			defaults: {
-				area: {
-					name: '',
-					phone: '',
-					subdomain: '',
-					hiring: '',
-					franchisee: {
-						name: '',
-						phone: '',
-						email: '',
-						address: {
-							street: '',
-							city: '',
-							state: '',
-							zip: ''
-						}
-					}
-				}
-			},
-
-			links: {
-				website: {
-					placeholder: function(area) {
-						return 'www.' + nameTransform(area) + '.com';
-					},
-					addon: 'http://'
-				},
-				facebook: {
-					placeholder: nameTransform,
-					addon: 'facebook.com/'
-				},
-				twitter: {
-					placeholder: nameTransform,
-					addon: '@'
-				},
-				instagram: {
-					placeholder: nameTransform,
-					addon: 'instagram.com/'
-				},
-				pinterest: {
-					placeholder: nameTransform,
-					addon: 'pinterest.com/'
-				},
-			},
-
-			populateDefaults: function(area) {
-				$.map(service.defaults.area, function(value, key) {
-					if(area[key]) return;
-					if(typeof value === 'object') {
-						area[key] = angular.copy(value);
-						return;
-					}
-					area[key] = value;
-				});
-				return area;
-			}
-		};
-
-		return service;
-	});
-
-	app.controller('AreasListController', function($scope, $http, $routeParams, $rootScope) {
-		var areaId = $rootScope.areaId;
-
-		$scope.path = 'restaurants';
-
-		var p = $http.get('/areas/' + areaId);
-
-		p.error(function(err) {
-			console.log('AreasListController: area ajax failed');
-			console.log(err);
-		});
-
-		p.then(function(res) {
-			$scope.area = res.data;
-		});
-
-		var r = $http.get('/restaurants/byAreaId/' + areaId);
-
-		r.error(function(err) {
-			console.log('AreasListController: restaurants ajax failed');
-			console.log(err);
-		});
-
-		r.then(function(res) {
-			$scope.restaurants = res.data;
-		});
-
-	});
-
-	app.controller('AreasAddController', function(
-		navMgr, messenger, pod, areaSchema, $scope, $http, $window
-	) {
-		navMgr.protect(function() { return $scope.form.$dirty; });
-		pod.podize($scope);
-
-		$scope.areaSchema = areaSchema;
-		$scope.area = areaSchema.populateDefaults({});
-
-		$scope.save = function save(area, options) {
-			options || (options = {});
-
-			$http.post(
-				'/areas/create', area
-			).success(function(data, status, headers, config) {
-				if(status >= 400) return;
-
-				messenger.show('Area created', '');
-
-				if(options.addMore) {
-					$scope.area = {};
-					return;
-				}
-
-				navMgr.protect(false);
-				$window.location.href = '#/areas/' + data.id;
-			});
-		};
-
-		$scope.cancel = function cancel() {
-			navMgr.cancel('#/areas');
-		};
-	});
-
-	app.controller('AreasEditController', function(
-		navMgr, messenger, pod, areaSchema, $scope, $http, $routeParams
-	) {
-		navMgr.protect(function() { return $scope.form.$dirty; });
-		pod.podize($scope);
-
-		$scope.areaSchema = areaSchema;
-		$scope.editMode = true;
-
-		$http.get(
-			'/areas/' + $routeParams.id
-		).success(function(data, status, headers, config) {
-			$scope.area = areaSchema.populateDefaults(data);
-		});
-
-		$scope.save = function save(area, options) {
-			options || (options = {});
-
-			$http.put(
-				'/areas/' + area.id, area
-			).success(function(data, status, headers, config) {
-				if(status >= 400) return;
-
-				messenger.show('Area updated', '');
-
-				$scope.form.$setPristine();
-			});
-		};
-
-		$scope.cancel = function cancel() {
-			navMgr.cancel('#/areas');
-		};
-	});
-
-
-	///
 	// Controllers: Customers
 	///
 
@@ -1675,7 +1435,6 @@
 		var service = {
 			defaults: {
 				customer: {
-					areaId: '',
 					fName: '',
 					lName: '',
 					addresses: {
@@ -1720,8 +1479,6 @@
 
 		$scope.customerSchema = customerSchema;
 		$scope.customer = customerSchema.populateDefaults({});
-
-		$scope.customer.areaId = $rootScope.areaId;
 
 		// TODO 
 		// clean phone number; integers only
@@ -1953,8 +1710,6 @@
 		$window, deviceMgr, authMgr, $timeout
 	) {
 
-		var areaId = $rootScope.areaId;
-
 		if(deviceMgr.isBigScreen()) {
 			$scope.showBig = true;
 		} else {
@@ -1989,15 +1744,13 @@
 	
 			authPromise.then(function(authData) {
 	
-				var areaId = $rootScope.areaId;
-				$scope.areaId = $rootScope.areaId;
 				$scope.authUserId = authData.userId;
 				$scope.authLevel = authData.authLevel;
 
 				var allOrdersTime = 0;
 				var allOrdersCount = 0;
 	
-				var p = $http.get('/orders/daily/' + areaId);
+				var p = $http.get('/orders/daily/');
 			
 				p.error(function(err) {
 					console.log('DispatchController: orders-daily ajax failed');
@@ -2228,14 +1981,10 @@
 		$scope, $http, $routeParams, $rootScope,
 		$window, messenger, dispatchOrderMgmt, authMgr
 	) {
-		var areaId = $rootScope.areaId;
-
 		var authPromise = authMgr.getAuthLevel();
 
 		authPromise.then(function(authData) {
 
-			var areaId = $rootScope.areaId;
-			$scope.areaId = $rootScope.areaId;
 			$scope.authLevel = authData.authLevel;
 
 			if(authData.authLevel < 3) {
@@ -2271,7 +2020,6 @@
 		$scope, $http, $routeParams, $rootScope,
 		$location, messenger, args, $modalInstance
 	) {
-		var areaId = $rootScope.areaId;
 
 		$http.get('/orders/' + args.orderId).then(function(res) {
 			$scope.order = res.data;
@@ -2362,15 +2110,13 @@
 
 		authPromise.then(function(authData) {
 
-			var areaId = $rootScope.areaId;
-			$scope.areaId = $rootScope.areaId;
 			$scope.authLevel = authData.authLevel;
 
 			if(authData.authLevel < 3) {
 				$window.location.href = '#/';
 			}
 
-			$http.get('/users/activeByAreaId/' + areaId).then(function(res) {
+			$http.get('/users/active/').then(function(res) {
 				$scope.drivers = res.data;
 			}).catch(function(err) {
 				console.log('DriversReportsController users-activeByAreaId ajax failed');
@@ -2417,7 +2163,6 @@
 		pod.podize($scope);
 
 		$scope.save = function save(email, options) {
-			email.areaId = $rootScope.areaId;
 			email.active = true;
 
 			options || (options = {});
@@ -2477,7 +2222,6 @@
 	app.controller('EmailListSearchController', function(
 		emailListSchema,	$scope, $http, $window, $rootScope
 	) {
-		var areaId = $rootScope.areaId;
 		
 		var authLevelMap = [
 			'None',
@@ -2517,197 +2261,15 @@
 
 
 	///
-	// Controllers: Hotels
-	///
-
-	app.config(function(httpInterceptorProvider) {
-		httpInterceptorProvider.register(/^\/hotels/);
-	});
-
-	app.factory('hotelSchema', function() {
-		function nameTransform(hotel) {
-			if(! hotel || ! hotel.name || hotel.name.length < 1) {
-				return 'hotel-name';
-			}
-			return (hotel.name
-				.replace(/[^a-zA-Z ]/g, '')
-				.replace(/ /g, '-')
-				.toLowerCase()
-			);
-		}
-
-		var service = {
-			defaults: {
-				hotel: {
-					areaId: '',
-					name: '',
-					addresses: [ ],
-					phone: ''
-				},
-				address: {
-					streetNumber: '',
-					streetName: '',
-					city: '',
-					state: '',
-					zip: '',
-				},
-			},
-
-			populateDefaults: function(hotel) {
-				$.map(service.defaults.hotel, function(value, key) {
-					if(hotel[key]) return;
-					if(typeof value === 'object') {
-						hotel[key] = angular.copy(value);
-						return;
-					}
-					hotel[key] = value;
-				});
-				if(hotel.addresses.length < 1) {
-					hotel.addresses.push(angular.copy(
-						service.defaults.address
-					));
-				}
-				hotel.addresses.forEach(function(address) {
-					_.forEach(service.defaults.address, function(value, key) {
-						if(address[key]) return;
-						if(typeof value === 'object') {
-							address[key] = angular.copy(value);
-							return;
-						}
-						address[key] = value;
-					});
-				});
-				return hotel;
-			}
-		};
-
-		return service;
-	});
-
-	app.controller('HotelsListController', function($scope, $http, $routeParams, $rootScope) {
-		var areaId = $rootScope.areaId;
-
-		$scope.path = 'hotels';
-
-		var p = $http.get('/areas/' + areaId);
-
-		p.error(function(err) {
-			console.log('HotelsListController: area ajax failed');
-			console.log(err);
-		});
-
-		p.then(function(res) {
-			$scope.area = res.data;
-		});
-
-		var r = $http.get('/hotels/byAreaId/' + areaId);
-
-		r.error(function(err) {
-			console.log('HotelsListController: hotels ajax failed');
-			console.log(err);
-		});
-
-		r.then(function(res) {
-			$scope.hotels = res.data;
-		});
-
-	});
-
-	app.controller('HotelsAddController', function(
-		navMgr, messenger, pod, hotelSchema, $scope, $http, $routeParams, $window
-	) {
-		
-		navMgr.protect(function() { return $scope.form.$dirty; });
-		pod.podize($scope);
-
-		$scope.hotelSchema = hotelSchema;
-		$scope.hotel = hotelSchema.populateDefaults({});
-
-		$scope.hotel.areaId = $routeParams.id;
-
-		$scope.save = function save(hotel, options) {
-
-			options || (options = {});
-
-			$http.post(
-				'/hotels/create', hotel
-			).success(function(data, status, headers, config) {
-				if(status >= 400) return;
-
-				messenger.show('Hotel created', '');
-
-				if(options.addMore) {
-					$scope.hotel = {};
-					return;
-				}
-
-				navMgr.protect(false);
-				$window.location.href = '#/hotels/';
-			});
-		};
-
-		$scope.cancel = function cancel() {
-			navMgr.cancel('#/');
-		};
-	});
-
-	app.controller('HotelsEditController', function(
-		navMgr, messenger, pod, hotelSchema, $scope, $http, $routeParams
-	) {
-		navMgr.protect(function() { return $scope.form.$dirty; });
-		pod.podize($scope);
-
-		$scope.hotelSchema = hotelSchema;
-		$scope.editMode = true;
-
-		$http.get(
-			'/hotels/' + $routeParams.id
-		).success(function(data, status, headers, config) {
-			$scope.hotel = hotelSchema.populateDefaults(data);
-		});
-
-		$scope.save = function save(hotel, options) {
-			options || (options = {});
-
-			$http.put(
-				'/hotels/' + hotel.id, hotel
-			).success(function(data, status, headers, config) {
-				if(status >= 400) return;
-
-				messenger.show('Hotel updated', '');
-
-				$scope.form.$setPristine();
-			});
-		};
-
-		$scope.cancel = function cancel() {
-			navMgr.cancel('#/');
-		};
-	});
-
-
-	///
 	// Messages
 	///
 	
 
 	app.controller('MessagesListController', function($scope, $http, $routeParams, $rootScope) {
-		var areaId = $rootScope.areaId;
 
 		$scope.path = 'messages';
 
-		var p = $http.get('/areas/' + areaId);
-
-		p.error(function(err) {
-			console.log('MessagesListController: area ajax failed');
-			console.log(err);
-		});
-
-		p.then(function(res) {
-			$scope.area = res.data;
-		});
-
-		var r = $http.get('/messages/byAreaId/' + areaId);
+		var r = $http.get('/messages/');
 
 		r.error(function(err) {
 			console.log('MessagesListController: messages ajax failed');
@@ -2742,13 +2304,11 @@
 		messageMgmt, $modalInstance, messenger,
 		$window
 	) {
-		var areaId = $rootScope.areaId;
 
 
 		$scope.sendMassMessage = function() {
 			var message = {};
 
-			message.areaId = areaId;
 			message.mType = $scope.mType;
 			if($scope.rType) {
 				message.rType = $scope.rType;
@@ -2787,7 +2347,6 @@
 		$q, $sce, configMgr, querystring, messenger,
 		$window, $timeout
 	) {
-		var areaId = $rootScope.areaId;
 
 		function refreshData() {
 			// assure that the page is still the same
@@ -2963,52 +2522,6 @@
 			});
 		}
 
-		$scope.getRestaurantName = function(optionId) {
-			return $q(function(resolve, reject) {
-				var r = $http.get('/options/' + optionId);
-				
-				r.error(function(err) {
-					console.log('OrderDetailsController: getRestaurantName-options ajax failed');
-					console.log(err);
-					reject(err);
-				});
-				
-				r.then(function(res) {
-					var s = $http.get('/items/' + res.data.itemId);
-					
-					s.error(function(err) {
-						console.log('OrderDetailsController: getRestaurantName-items ajax failed');
-						console.log(err);
-						reject(err);
-					});
-					
-					s.then(function(res) {
-						var t = $http.get('/menus/' + res.data.menuId);
-						
-						t.error(function(err) {
-							console.log('OrderDetailsController: getRestaurantName-menus ajax failed');
-							console.log(err);
-							reject(err);
-						});
-						
-						t.then(function(res) {
-							var u = $http.get('/restaurants/' + res.data.restaurantId);
-							
-							u.error(function(err) {
-								console.log('OrderDetailsController: getRestaurantName-restaurants ajax failed');
-								console.log(err);
-								reject(err);
-							});
-							
-							u.then(function(res) {
-								resolve(res.data);
-							});
-						});
-					});
-				});
-			});
-		};
-
 	});
 
 
@@ -3035,7 +2548,6 @@
 		var service = {
 			defaults: {
 				promo: {
-					areaId: '',
 					name: '',
 					uses: '',
 					expires: '',
@@ -3062,22 +2574,10 @@
 	});
 
 	app.controller('PromosListController', function($scope, $http, $routeParams, $rootScope) {
-		var areaId = $rootScope.areaId;
 
 		$scope.path = 'promos';
 
-		var p = $http.get('/areas/' + areaId);
-
-		p.error(function(err) {
-			console.log('PromosListController: area ajax failed');
-			console.log(err);
-		});
-
-		p.then(function(res) {
-			$scope.area = res.data;
-		});
-
-		var r = $http.get('/promos/byAreaId/' + areaId);
+		var r = $http.get('/promos/');
 
 		r.error(function(err) {
 			console.log('PromosListController: promos ajax failed');
@@ -3099,8 +2599,6 @@
 
 		$scope.promoSchema = promoSchema;
 		$scope.promo = promoSchema.populateDefaults({});
-
-		$scope.promo.areaId = $routeParams.id;
 
 		$scope.save = function save(promo, options) {
 
@@ -3165,270 +2663,6 @@
 
 
 	///
-	// Controllers: Restaurants
-	///
-
-	app.config(function(httpInterceptorProvider) {
-		httpInterceptorProvider.register(/^\/restaurants/);
-	});
-
-	app.factory('restaurantSchema', function() {
-		function nameTransform(restaurant) {
-			if(! restaurant || ! restaurant.name || restaurant.name.length < 1) {
-				return 'restaurant-name';
-			}
-			return (restaurant.name
-				.replace(/[^a-zA-Z ]/g, '')
-				.replace(/ /g, '-')
-				.toLowerCase()
-			);
-		}
-
-		var service = {
-			defaults: {
-				restaurant: {
-					areaId: '',
-					name: '',
-					desc: '',
-					slogan: '',
-					cuisine: '',
-					featured: '',
-					active: '',
-					image: '',
-					slug: '',
-					phone: '',
-					addresses: [ ],
-					hours0open: '',
-					hours0close: '',
-					hours1open: '',
-					hours1close: '',
-					hours2open: '',
-					hours2close: '',
-					hours3open: '',
-					hours3close: '',
-					hours4open: '',
-					hours4close: '',
-					hours5open: '',
-					hours5close: '',
-					hours6open: '',
-					hours6close: '',
-				},
-				address: {
-					streetNumber: '',
-					streetName: '',
-					city: '',
-					state: '',
-					zip: '',
-				}
-			},
-
-			links: {
-				website: {
-					placeholder: function(restaurant) {
-						return 'www.' + nameTransform(restaurant) + '.com';
-					},
-					addon: 'http://'
-				},
-				facebook: {
-					placeholder: nameTransform,
-					addon: 'facebook.com/'
-				},
-				twitter: {
-					placeholder: nameTransform,
-					addon: '@'
-				},
-				instagram: {
-					placeholder: nameTransform,
-					addon: 'instagram.com/'
-				},
-				pinterest: {
-					placeholder: nameTransform,
-					addon: 'pinterest.com/'
-				},
-			},
-
-			populateDefaults: function(restaurant) {
-				$.map(service.defaults.restaurant, function(value, key) {
-					if(restaurant[key]) return;
-					if(typeof value === 'object') {
-						restaurant[key] = angular.copy(value);
-						return;
-					}
-					restaurant[key] = value;
-				});
-
-				if(restaurant.addresses.length < 1) {
-					restaurant.addresses.push(service.defaults.address);
-				}
-
-				restaurant.addresses.forEach(function(address) {
-					_.forEach(service.defaults.address, function(value, key) {
-						if(address[key]) return;
-						if(typeof value === 'object') {
-							address[key] = angular.copy(value);
-							return;
-						}
-						address[key] = value;
-					});
-				});
-				return restaurant;
-			}
-		};
-
-		return service;
-	});
-
-	app.controller('RestaurantsListController', function(datatables, $scope) {
-		$scope.name = 'Restaurant';
-		$scope.pluralName = 'Restaurants';
-		$scope.path = 'restaurants';
-
-		datatables.build($scope, {
-			id: 'fms-restaurants-grid',
-			ajax: '/restaurants/datatables',
-			actions: [
-				{
-					url: '#/restaurants/edit/',
-					content: '<i class="fa fa-2x fa-pencil-square-o"></i>'
-				},
-				{
-					url: '#/restaurants/',
-					content: '<i class="fa fa-2x fa-binoculars"></i>'
-				}
-			],
-			cols: [
-				{label: 'Actions', data: 'id'},
-				{label: 'Name', data: 'name'},
-				{label: 'Created', data: 'createdAt', type: 'time'},
-				{label: 'Updated', data: 'updatedAt', type: 'time'},
-			]
-		}); 
-	});
-
-	app.controller('RestaurantsAddController', function(
-		navMgr, messenger, pod, restaurantSchema, $scope, $http, $routeParams, $window
-	) {
-		
-		navMgr.protect(function() { return $scope.form.$dirty; });
-		pod.podize($scope);
-
-		$scope.restaurantSchema = restaurantSchema;
-		$scope.restaurant = restaurantSchema.populateDefaults({});
-
-		$scope.restaurant.areaId = $routeParams.id;
-
-		$scope.imageCropResult = null;
-		$scope.showImageCropper = false;
-
-		$scope.$watch('imageCropResult', function(image) {
-			if($scope.restaurant) {
-				$scope.restaurant.image = image;
-			}
-		});
-
-		$scope.getSlug = function(name) {
-			var namePcs = name.split(" ");
-			var namePcsLength = namePcs.length;
-			var counter = 0;
-			var first = true;
-			var slug = '';
-			while(counter < namePcsLength) {
-				if(first) {
-					var a = namePcs[counter].toLowerCase();
-					var b = a.replace(/&/g, 'and');
-					var c = b.replace(/\-/g, '');
-					var d = c.replace(/[^A-Za-z0-9]/g, '');
-					if(d.length > 0) {
-						slug += d;
-						first = false;
-					}
-				} else {
-					var e = namePcs[counter].toLowerCase();
-					var f = e.replace(/&/g, 'and');
-					var g = f.replace(/\-/g, '');
-					var h = g.replace(/[^A-Za-z0-9]/g, '');
-					if(h.length > 0) {
-						slug += '-';
-						slug += h;
-					}
-				}
-				counter ++;
-			}
-			return slug;
-		}
-
-		$scope.save = function save(restaurant, options) {
-			restaurant.slug = $scope.getSlug(restaurant.name);
-
-			options || (options = {});
-
-			$http.post(
-				'/restaurants/create', restaurant
-			).success(function(data, status, headers, config) {
-				if(status >= 400) return;
-
-				messenger.show('Restaurant created', '');
-
-				if(options.addMore) {
-					$scope.restaurant = {};
-					return;
-				}
-
-				navMgr.protect(false);
-				$window.location.href = '#/restaurants/' + data.id;
-			});
-		};
-
-		$scope.cancel = function cancel() {
-			navMgr.cancel('#/');
-		};
-	});
-
-	app.controller('RestaurantsEditController', function(
-		navMgr, messenger, pod, restaurantSchema, $scope, $http, $routeParams
-	) {
-		navMgr.protect(function() { return $scope.form.$dirty; });
-		pod.podize($scope);
-
-		$scope.restaurantSchema = restaurantSchema;
-		$scope.editMode = true;
-
-		$http.get(
-			'/restaurants/' + $routeParams.id
-		).success(function(data, status, headers, config) {
-			$scope.restaurant = restaurantSchema.populateDefaults(data);
-		});
-
-		$scope.imageCropResult = null;
-		$scope.showImageCropper = false;
-
-		$scope.$watch('imageCropResult', function(image) {
-			if($scope.restaurant) {
-				$scope.restaurant.image = image;
-			}
-		});
-
-		$scope.save = function save(restaurant, options) {
-			options || (options = {});
-
-			$http.put(
-				'/restaurants/' + restaurant.id, restaurant
-			).success(function(data, status, headers, config) {
-				if(status >= 400) return;
-
-				messenger.show('Restaurant updated', '');
-
-				$scope.form.$setPristine();
-			});
-		};
-
-		$scope.cancel = function cancel() {
-			navMgr.cancel('#/');
-		};
-	});
-
-
-	///
 	// Controllers: Shifts
 	///
 
@@ -3436,7 +2670,6 @@
 		$scope, $http, $routeParams, $rootScope, authMgr
 	) {
 		$scope.areaName = $rootScope.areaName;
-		$scope.areaId = $rootScope.areaId;
 
 		var driverId = $routeParams.id;
 
@@ -3523,7 +2756,6 @@
 		$scope, $http, $routeParams, $rootScope, authMgr, deviceMgr
 	) {
 		$scope.areaName = $rootScope.areaName;
-		$scope.areaId = $rootScope.areaId;
 
 		if(deviceMgr.isBigScreen()) {
 			$scope.showBig = true;
@@ -3635,14 +2867,11 @@
 	});
 
 	app.controller('ShiftViewController', function(navMgr, messenger, pod, $scope, $http, $routeParams, $window, $rootScope) {
-		$scope.areaId = $rootScope.areaId;
 
 		navMgr.protect(function() { return $scope.form.$dirty; });
 		pod.podize($scope);
 
 		$scope.save = function save(story) {
-
-			story.areaId = $scope.areaId;
 
 			$http.post(
 				'/stories/create', story
@@ -3668,9 +2897,8 @@
 
 	app.controller('StoriesListController', function($scope, $http, $routeParams, $rootScope) {
 		$scope.areaName = $rootScope.areaName;
-		$scope.areaId = $rootScope.areaId;
 
-		var p = $http.get('/stories/byAreaId/' +$scope.areaId);
+		var p = $http.get('/stories/');
 
 		p.error(function(err) {
 			console.log('StoriesListController: ajax failed');
@@ -3683,14 +2911,11 @@
 	});
 
 	app.controller('StoriesAddController', function(navMgr, messenger, pod, $scope, $http, $routeParams, $window, $rootScope) {
-		$scope.areaId = $rootScope.areaId;
 
 		navMgr.protect(function() { return $scope.form.$dirty; });
 		pod.podize($scope);
 
 		$scope.save = function save(story) {
-
-			story.areaId = $scope.areaId;
 
 			$http.post(
 				'/stories/create', story
@@ -3711,19 +2936,19 @@
 
 
 	///
-	// Controllers: Menus
+	// Controllers: Categories
 	///
 
 	app.config(function(httpInterceptorProvider) {
-		httpInterceptorProvider.register(/^\/menus/);
+		httpInterceptorProvider.register(/^\/categories/);
 	});
 
-	app.factory('menuSchema', function() {
-		function nameTransform(menu) {
-			if(! menu || ! menu.name || menu.name.length < 1) {
-				return 'menu-name';
+	app.factory('categorySchema', function() {
+		function nameTransform(category) {
+			if(! category || ! category.name || category.name.length < 1) {
+				return 'category-name';
 			}
-			return (menu.name
+			return (category.name
 				.replace(/[^a-zA-Z ]/g, '')
 				.replace(/ /g, '-')
 				.toLowerCase()
@@ -3732,21 +2957,15 @@
 
 		var service = {
 			defaults: {
-				menu: {
-					restaurantId: '',
-					name: '',
-					desc: '',
-					active: '',
-					slug: '',
-					availStart: '',
-					availEnd: ''
+				category: {
+					name: ''
 				}
 			},
 
 			links: {
 				website: {
-					placeholder: function(menu) {
-						return 'www.' + nameTransform(menu) + '.com';
+					placeholder: function(category) {
+						return 'www.' + nameTransform(category) + '.com';
 					},
 					addon: 'http://'
 				},
@@ -3768,185 +2987,147 @@
 				},
 			},
 
-			populateDefaults: function(menu) {
-				$.map(service.defaults.menu, function(value, key) {
-					if(menu[key]) return;
+			populateDefaults: function(category) {
+				$.map(service.defaults.category, function(value, key) {
+					if(category[key]) return;
 					if(typeof value === 'object') {
-						menu[key] = angular.copy(value);
+						category[key] = angular.copy(value);
 						return;
 					}
-					menu[key] = value;
+					category[key] = value;
 				});
-				return menu;
+				return category;
 			}
 		};
 
 		return service;
 	});
 
-	app.controller('MenusListController', function($scope, $http, $routeParams) {
-		$scope.path = 'menus';
+	app.controller('CategoriesListController', function($scope, $http, $routeParams) {
+		$scope.path = 'categories';
 
-		var p = $http.get('/restaurants/' + $routeParams.id);
+		var p = $http.get('/categories/' + $routeParams.id);
 
 		p.error(function(err) {
-			console.log('MenusListController: restaurant ajax failed');
+			console.log('CategoriesListController: category ajax failed');
 			console.log(err);
 		});
 
 		p.then(function(res) {
-			$scope.restaurant = res.data;
+			$scope.category = res.data;
 		});
 
-		var r = $http.get('/menus/byRestaurantId/' + $routeParams.id);
+		var r = $http.get('/categories/');
 
 		r.error(function(err) {
-			console.log('MenusListController: menus ajax failed');
+			console.log('CategoriesListController: categories ajax failed');
 			console.log(err);
 		});
 
 		r.then(function(res) {
-			$scope.menus = res.data;
+			$scope.categories = res.data;
 		});
 
 	});
 
 
-	app.controller('MenusAddController', function(
-		navMgr, messenger, pod, menuSchema, $scope, $http, $routeParams, $window
+	app.controller('CategoriesAddController', function(
+		navMgr, messenger, pod, categorySchema, $scope, $http, $routeParams, $window
 	) {
 
 		navMgr.protect(function() { return $scope.form.$dirty; });
 		pod.podize($scope);
 
-		$scope.menuSchema = menuSchema;
-		$scope.menu = menuSchema.populateDefaults({});
+		$scope.categorySchema = categorySchema;
+		$scope.category = categorySchema.populateDefaults({});
 
-		$scope.menu.restaurantId = $routeParams.id
+		$scope.save = function save(category, options) {
 
-		$scope.getSlug = function(name) {
-			var namePcs = name.split(" ");
-			var namePcsLength = namePcs.length;
-			var counter = 0;
-			var first = true;
-			var slug = '';
-			while(counter < namePcsLength) {
-				if(first) {
-					var a = namePcs[counter].toLowerCase();
-					var b = a.replace(/&/g, 'and');
-					var c = b.replace(/\-/g, '');
-					var d = c.replace(/[^A-Za-z0-9]/g, '');
-					if(d.length > 0) {
-						slug += d;
-						first = false;
-					}
-				} else {
-					var e = namePcs[counter].toLowerCase();
-					var f = e.replace(/&/g, 'and');
-					var g = f.replace(/\-/g, '');
-					var h = g.replace(/[^A-Za-z0-9]/g, '');
-					if(h.length > 0) {
-						slug += '-';
-						slug += h;
-					}
-				}
-				counter ++;
-			}
-
-			return slug;
-		}
-
-		$scope.save = function save(menu, options) {
-
-			var p = $http.get('/restaurants/' + $routeParams.id);
+			var p = $http.get('/categories/' + $routeParams.id);
 		
 			p.error(function(err) {
-				console.log('MenusAddController: restaurant ajax failed');
+				console.log('CategoriesAddController: restaurant ajax failed');
 				console.log(err);
 			});
 		
 			p.then(function(res) {
-				$scope.menu.slug = res.data.slug;
-
-				$scope.menu.slug += '-';
-				$scope.menu.slug += $scope.getSlug(menu.name);
 
 				options || (options = {});
 		
 				$http.post(
-					'/menus/create', menu
+					'/categories/create', category
 				).success(function(data, status, headers, config) {
 					if(status >= 400) return;
 		
-					messenger.show('Menu created', '');
+					messenger.show('Category created', '');
 		
 					if(options.addMore) {
-						$scope.menu = {};
+						$scope.category = {};
 						return;
 					}
 		
 					navMgr.protect(false);
-					$window.location.href = '#/menus/' + $routeParams.id;
+					$window.location.href = '#/categories/' + $routeParams.id;
 				});
 			});
 		};
 
 		$scope.cancel = function cancel() {
-			navMgr.cancel('#/menus/'+$routeParams.id);
+			navMgr.cancel('#/categories/'+$routeParams.id);
 		};
 	});
 
-	app.controller('MenusEditController', function(
-		navMgr, messenger, pod, menuSchema, $scope, $http, $routeParams
+	app.controller('CategoriesEditController', function(
+		navMgr, messenger, pod, categorySchema, $scope, $http, $routeParams
 	) {
 
 		navMgr.protect(function() { return $scope.form.$dirty; });
 		pod.podize($scope);
 
-		$scope.menuSchema = menuSchema;
+		$scope.categorySchema = categorySchema;
 		$scope.editMode = true;
 
 		$http.get(
-			'/menus/' + $routeParams.id
+			'/categories/' + $routeParams.id
 		).success(function(data, status, headers, config) {
-			$scope.menu = menuSchema.populateDefaults(data);
+			$scope.category = categorySchema.populateDefaults(data);
 		});
 
-		$scope.save = function save(menu, options) {
+		$scope.save = function save(category, options) {
 
 			options || (options = {});
 
 			$http.put(
-				'/menus/' + menu.id, menu
+				'/categories/' + category.id, category
 			).success(function(data, status, headers, config) {
 				if(status >= 400) return;
 
-				messenger.show('Menu updated', '');
+				messenger.show('Category updated', '');
 
 				$scope.form.$setPristine();
 			});
 		};
 
 		$scope.cancel = function cancel() {
-			navMgr.cancel('#/menus/');
+			navMgr.cancel('#/categories/');
 		};
 	});
 
 
 	///
-	// Controllers: Items
+	// Controllers: Popcorn
 	///
 
 	app.config(function(httpInterceptorProvider) {
-		httpInterceptorProvider.register(/^\/items/);
+		httpInterceptorProvider.register(/^\/popcorn/);
 	});
 
-	app.factory('itemSchema', function() {
-		function nameTransform(item) {
-			if(! item || ! item.name || item.name.length < 1) {
-				return 'item-name';
+	app.factory('popcornSchema', function() {
+		function nameTransform(popcorn) {
+			if(! popcorn || ! popcorn.name || popcorn.name.length < 1) {
+				return 'popcorn-name';
 			}
-			return (item.name
+			return (popcorn.name
 				.replace(/[^a-zA-Z ]/g, '')
 				.replace(/ /g, '-')
 				.toLowerCase()
@@ -3955,19 +3136,19 @@
 
 		var service = {
 			defaults: {
-				item: {
-					menuId: '',
+				popcorn: {
 					name: '',
-					desc: '',
-					image: '',
-					active: ''
+					description: '',
+					category: '',
+					active: '',
+					months: []
 				}
 			},
 
 			links: {
 				website: {
-					placeholder: function(item) {
-						return 'www.' + nameTransform(item) + '.com';
+					placeholder: function(popcorn) {
+						return 'www.' + nameTransform(popcorn) + '.com';
 					},
 					addon: 'http://'
 				},
@@ -3989,126 +3170,126 @@
 				},
 			},
 
-			populateDefaults: function(item) {
-				$.map(service.defaults.item, function(value, key) {
-					if(item[key]) return;
+			populateDefaults: function(popcorn) {
+				$.map(service.defaults.popcorn, function(value, key) {
+					if(popcorn[key]) return;
 					if(typeof value === 'object') {
-						item[key] = angular.copy(value);
+						popcorn[key] = angular.copy(value);
 						return;
 					}
-					item[key] = value;
+					popcorn[key] = value;
 				});
-				return item;
+				return popcorn;
 			}
 		};
 
 		return service;
 	});
 
-	app.controller('ItemsListController', function(datatables, $http, $routeParams, $scope) {
-		$scope.path = 'items';
+	app.controller('PopcornListController', function(datatables, $http, $routeParams, $scope) {
+		$scope.path = 'popcorn';
 
-		var p = $http.get('/menus/' + $routeParams.id);
+		var p = $http.get('/categories/' + $routeParams.id);
 
 		p.error(function(err) {
-			console.log('ItemsListController: menu ajax failed');
+			console.log('PopcornListController: category ajax failed');
 			console.log(err);
 		});
 
 		p.then(function(res) {
-			$scope.menu = res.data;
+			$scope.category = res.data;
 		});
 
-		var r = $http.get('/items/byMenuId/' + $routeParams.id);
+		var r = $http.get('/popcorn/byCategoryId/' + $routeParams.id);
 
 		r.error(function(err) {
-			console.log('MenusListController: items ajax failed');
+			console.log('CategoriesListController: popcorn ajax failed');
 			console.log(err);
 		});
 
 		r.then(function(res) {
-			$scope.items = res.data;
+			$scope.popcorn = res.data;
 		});
 
 	});
 
-	app.controller('ItemsAddController', function(
-		navMgr, messenger, pod, itemSchema, $scope, $http, $routeParams, $window
+	app.controller('PopcornAddController', function(
+		navMgr, messenger, pod, popcornSchema, $scope, $http, $routeParams, $window
 	) {
 
 		navMgr.protect(function() { return $scope.form.$dirty; });
 		pod.podize($scope);
 
-		$scope.itemSchema = itemSchema;
-		$scope.item = itemSchema.populateDefaults({});
+		$scope.popcornSchema = popcornSchema;
+		$scope.popcorn = popcornSchema.populateDefaults({});
 
-		$scope.item.menuId = $routeParams.id;
-		$scope.item.active = true;
+		$scope.popcorn.categoryId = $routeParams.id;
+		$scope.popcorn.active = true;
 
 		$scope.imageCropResult = null;
 		$scope.showImageCropper = false;
 
 		$scope.$watch('imageCropResult', function(image) {
-			if($scope.item) {
-				$scope.item.image = image;
+			if($scope.popcorn) {
+				$scope.popcorn.image = image;
 			}
 		});
 
-		$scope.save = function save(item, options) {
+		$scope.save = function save(popcorn, options) {
 			options || (options = {});
 
 			$http.post(
-				'/items/create', item
+				'/popcorn/create', popcorn
 			).success(function(data, status, headers, config) {
 				if(status >= 400) return;
 
 				messenger.show('Item created', '');
 
 				if(options.addMore) {
-					$scope.item = {};
+					$scope.popcorn = {};
 					return;
 				}
 
 				navMgr.protect(false);
-				$window.location.href = '#/items/' + $routeParams.id;
+				$window.location.href = '#/popcorn/' + $routeParams.id;
 			});
 		};
 
 		$scope.cancel = function cancel() {
-			navMgr.cancel('#/items/'+$routeParams.id);
+			navMgr.cancel('#/popcorn/'+$routeParams.id);
 		};
 	});
 
-	app.controller('ItemsEditController', function(
-		navMgr, messenger, pod, itemSchema, $scope, $http, $routeParams
+	app.controller('PopcornEditController', function(
+		navMgr, messenger, pod, popcornSchema, $scope, $http, $routeParams
 	) {
 		
 		navMgr.protect(function() { return $scope.form.$dirty; });
 		pod.podize($scope);
 
-		$scope.itemSchema = itemSchema;
+		$scope.popcornSchema = popcornSchema;
 		$scope.editMode = true;
 
 		$http.get(
-			'/items/' + $routeParams.id
+			'/popcorn/' + $routeParams.id
 		).success(function(data, status, headers, config) {
-			$scope.item = itemSchema.populateDefaults(data);
+			$scope.popcorn = popcornSchema.populateDefaults(data);
 		});
 
 		$scope.imageCropResult = null;
 		$scope.showImageCropper = false;
 
 		$scope.$watch('imageCropResult', function(image) {
-			if($scope.item) {
-				$scope.item.image = image;
+			if($scope.popcorn) {
+				$scope.popcorn.image = image;
 			}
 		});
 
-		$scope.save = function save(item, options) {
+		$scope.save = function save(popcorn, options) {
 			options || (options = {});
 
 			$http.put(
-				'/items/' + item.id, item
+				'/popcorn/' + popcorn.id, popcorn
 			).success(function(data, status, headers, config) {
 				if(status >= 400) return;
 
@@ -4119,7 +3300,7 @@
 		};
 
 		$scope.cancel = function cancel() {
-			navMgr.cancel('#/items');
+			navMgr.cancel('#/popcorn');
 		};
 	});
 
@@ -4147,7 +3328,7 @@
 		var service = {
 			defaults: {
 				option: {
-					itemId: '',
+					popcornId: '',
 					name: '',
 					price: ''
 				}
@@ -4197,21 +3378,21 @@
 	app.controller('OptionsListController', function(datatables, $http, $routeParams, $scope) {
 		$scope.path = 'options';
 
-		var p = $http.get('/items/' + $routeParams.id);
+		var p = $http.get('/popcorn/' + $routeParams.id);
 
 		p.error(function(err) {
-			console.log('ItemsListController: item ajax failed');
+			console.log('PopcornListController: popcorn ajax failed');
 			console.log(err);
 		});
 
 		p.then(function(res) {
-			$scope.item = res.data;
+			$scope.popcorn = res.data;
 		});
 
-		var r = $http.get('/options/byItemId/' + $routeParams.id);
+		var r = $http.get('/options/byPopcornId/' + $routeParams.id);
 
 		r.error(function(err) {
-			console.log('MenusListController: items ajax failed');
+			console.log('CategoriesListController: popcorn ajax failed');
 			console.log(err);
 		});
 
@@ -4231,7 +3412,7 @@
 		$scope.optionSchema = optionSchema;
 		$scope.option = optionSchema.populateDefaults({});
 
-		$scope.option.itemId = $routeParams.id;
+		$scope.option.popcornId = $routeParams.id;
 
 		$scope.save = function save(option, options) {
 			options || (options = {});
@@ -4316,7 +3497,7 @@
 		var service = {
 			defaults: {
 				bev: {
-					menuId: '',
+					categoryId: '',
 					name: '',
 					desc: '',
 					image: '',
