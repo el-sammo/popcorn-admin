@@ -1917,21 +1917,6 @@
 		
 						order.currStatus = orderStatusMap[order.orderStatus];
 			
-						if(order.things.length > 0) {
-							order.restaurants = '';
-							var firstRest = true;
-							order.things.forEach(function(thing) {
-								if(!order.restaurants.match(thing.restaurantName)) {
-									if(firstRest) {
-										order.restaurants = thing.restaurantName;
-										firstRest = false;
-									} else {
-										order.restaurants = order.restaurants + ', ' + thing.restaurantName;
-									}
-								}
-							});
-						}
-		
 						if(order.driverId) {
 							var r = $http.get('/users/' + order.driverId);
 						
@@ -2023,33 +2008,6 @@
 
 		$http.get('/orders/' + args.orderId).then(function(res) {
 			$scope.order = res.data;
-
-			var rests = [];
-			$scope.order.things.forEach(function(thing) {
-				if(rests.indexOf(thing.restaurantName) < 0) {
-					rests.push(thing.restaurantName);
-				}
-			});
-		
-			$scope.addRests = 0;
-			if(rests.length > 1) {
-				$scope.addRests = rests.length - 1;
-			}
-		
-			$scope.restNames = '';
-			var firstName = true;
-			rests.forEach(function(rest) {
-				if(firstName) {
-					$scope.restNames = rest;
-					firstName = false;
-				} else {
-					if(rests.indexOf(rest) < $scope.addRests) {
-						$scope.restNames = $scope.restNames + ', ' + rest;
-					} else {
-						$scope.restNames = $scope.restNames + ' and ' + rest;
-					}
-				}
-			})
 
 			$http.get('/users/' + args.driverId).then(function(res) {
 				$scope.driver = res.data;
@@ -2367,7 +2325,6 @@
 			//     ]
 			//   }
 			// ];
-			$scope.orderRestaurants = [];
 	
 			var p = $http.get('/orders/' + $routeParams.id);
 		
@@ -2384,36 +2341,12 @@
 					$scope.dispatchReceived = $scope.order.dispatchReceived;
 				}
 				$scope.paymentMethod = $scope.order.paymentMethods;
-				$scope.deliveryFee = '$'+parseFloat($scope.order.deliveryFee).toFixed(2);
 				$scope.discount = '$'+parseFloat($scope.order.discount).toFixed(2);
-				if($scope.order.gratuity) {
-					$scope.gratuity = '$'+parseFloat($scope.order.gratuity).toFixed(2);
-				} else {
-					$scope.gratuity = '$0.00';
-				}
 				$scope.total = '$'+parseFloat($scope.order.total).toFixed(2);
 				var subplustax = parseFloat($scope.order.subtotal) + parseFloat($scope.order.tax);
 				$scope.subplustax = '$'+parseFloat(subplustax).toFixed(2);
 				$scope.discountPercent = 0;
 				$scope.bevThings = $scope.order.bevThings;
-				$scope.order.things.forEach(function(thing) {
-					$scope.getRestaurantName(thing.optionId).then(function(restaurantData) {
-						var restaurant = _.find($scope.orderRestaurants, {name: restaurantData.name});
-						if(! restaurant) {
-							restaurant = {name: restaurantData.name, phone: restaurantData.phone, items: []};
-							$scope.orderRestaurants.push(restaurant);
-						}
-						// TODO: build an array (if more than one rest w/discount
-						// and ng-repeat loop through on the template
-						if(restaurantData.discountPercent) {
-							$scope.discountPercent = restaurantData.discountPercent;
-							$scope.discountPercentRestName = restaurantData.name;
-						}
-						restaurant.items.push(
-							_.pick(thing, ['quantity', 'name', 'option', 'specInst', 'price'])
-						);
-					});
-				});
 	
 				var r = $http.get('/customers/' + $scope.order.customerId);
 				
@@ -2432,18 +2365,18 @@
 					$scope.phone = $scope.customer.phone;
 					$scope.address = $scope.customer.addresses.primary.streetNumber+' '+$scope.customer.addresses.primary.streetName+' '+$scope.customer.addresses.primary.city;
 	
-					$scope.src = $sce.trustAsResourceUrl(
-						'https://www.google.com/maps/embed/v1/place?' + querystring.stringify({
-							key: configMgr.config.vendors.googleMaps.key,
-							q: ([
-								$scope.customer.addresses.primary.streetNumber,
-								$scope.customer.addresses.primary.streetName,
-								$scope.customer.addresses.primary.city,
-								$scope.customer.addresses.primary.state,
-								$scope.customer.addresses.primary.zip
-							].join('+'))
-						})
-					);
+//					$scope.src = $sce.trustAsResourceUrl(
+//						'https://www.google.com/maps/embed/v1/place?' + querystring.stringify({
+//							key: configMgr.config.vendors.googleMaps.key,
+//							q: ([
+//								$scope.customer.addresses.primary.streetNumber,
+//								$scope.customer.addresses.primary.streetName,
+//								$scope.customer.addresses.primary.city,
+//								$scope.customer.addresses.primary.state,
+//								$scope.customer.addresses.primary.zip
+//							].join('+'))
+//						})
+//					);
 				});
 			});
 

@@ -14,14 +14,7 @@
 			<span class="orderDetailsDestinationInfoBold" ng-show="paymentMethod != 'cash'">CC - {{total}}</span>
 			<span class="orderDetailsDestinationInfoRed" ng-show="paymentMethod == 'cash'">Cash - {{total}}</span>
 			<br/>
-			<span class="orderDetailsDestinationInfo">Delivery Fee - {{deliveryFee}}</span>
-			<br/>
 			<span class="orderDetailsDestinationInfo">Discount - {{discount}}</span>
-			<br/>
-			<span class="orderDetailsDestinationInfo">Gratuity - {{gratuity}}</span>
-			<br/>
-			<span class="orderDetailsDestinationInfoGreen">Restaurant - {{subplustax}}</span>
-			<span class="orderDetailsDestinationInfoGreen" ng-show="discountPercent > 0"><br/>{{discountPercentRestName}} Discount Percent: {{discountPercent}}%</span>
 		</div>
 		<div class="col-md-2">
 			<br/>
@@ -46,19 +39,9 @@
 <div class="col-md-12">
 	<div class="row">
 		<div class="col-md-3">
-			<div class="row" ng-repeat="restaurant in orderRestaurants">
-				<div class="col-md-12">
-					<div class="row">
-						<span class="orderDetailsRestaurantInfo"><h4>{{restaurant.name}} ({{restaurant.phone}})</h4></span>
-					</div>
-				</div>
-				<div class="col-md-12">
-					<div class="row" ng-repeat="item in restaurant.items">
-						<div class="col-md-11 col-md-offset-1">
-							<span class="orderDetailsItemInfo"><b>{{item.quantity}}</b> {{item.name}} ({{item.price}}) - {{item.option}}<br/></span>
-							<span class="orderDetailsItemInfo">{{item.specInst}}<br/></span>
-						</div>
-					</div>
+			<div class="row" ng-repeat="thing in order.things">
+				<div class="col-md-11 col-md-offset-1">
+					<span class="orderDetailsItemInfo"><b>{{thing.quantity}}</b> {{thing.option}} {{thing.name}}<br/></span>
 				</div>
 				<br/>
 			</div>
@@ -69,6 +52,7 @@
 				<br/>
 			</div>
 		</div>
+		<!--
 		<div class="col-md-9">
 			<div class="row">
 				<div class="col-md-12">
@@ -76,5 +60,6 @@
 				</div>
 			</div>
 		</div>
+		-->
 	</div>
 </div>
