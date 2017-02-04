@@ -1,0 +1,94 @@
+<div class="col-md-12 page-header" ng-cloak>
+	<h4>Current Orders as of {{currentDisplayTime}}</h4>
+ 	<h4><font color="{{avgColor}}">Average Order Time: {{averageOrderTime}}</font></h4>
+</div>
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-2">
+			<h4>Order Age</h4>
+		</div>
+		<div class="col-md-2">
+			<h4>Order Status</h4>
+		</div>
+		<div class="col-md-2">
+			<h4>Order Total</h4>
+		</div>
+		<div class="col-md-2">
+			<h4>Order Restaurants</h4>
+		</div>
+		<div class="col-md-2">
+			<h4>Driver</h4>
+		</div>
+		<div class="col-md-2">
+			<h4>Destination</h4>
+		</div>
+	</div>
+	<div class="row" ng-show="showBig && (authLevel > 2 || userId === authUserId)" ng-init="things = order.things; userId = order.driverId" ng-repeat="order in orders">
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.finalAge}}</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.timeToDelivery}}</a><br/></span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.finalAge}}</a><br/></span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.currStatus}} ({{order.orderStatus}})</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.currStatus}} ({{order.orderStatus}})</a><br/></span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.currStatus}} ({{order.orderStatus}})</a><br/></span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.total}} ({{order.payType}})</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.total}} ({{order.payType}})</a><br/></span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.total}} ({{order.payType}})</a><br/></span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.restaurants}}</a> </span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.restaurants}}</a> </span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.restaurants}}</a> </span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.driver && order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.driver}}</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.driver}}</a><br/></span>
+			<span ng-show="order.driver && order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.driver}}</a><br/></span>
+			<span ng-show="authLevel > 2 && !order.driver && order.orderStatus > 4 && order.orderStatus < 9"><a href="#/dispatch/{{order.id}}" class="leftNavLink">Dispatch Order ({{authLevel}})</a><br/></span>
+			<span ng-show="!order.driver && order.orderStatus < 5" class="leftNavLinkRed">Pending<br/></span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.destination}}</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.destination}}</a><br/></span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.destination}}</a><br/></span>
+		</div>
+	</div>
+	<div class="row" ng-show="!showBig" ng-init="things = order.things" ng-repeat="order in orders" style="border-bottom: 1px solid grey; margin-bottom: 8px">
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.finalAge}}</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.timeToDelivery}}</a><br/></span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.finalAge}}</a><br/></span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.currStatus}} ({{order.orderStatus}})</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.currStatus}} ({{order.orderStatus}})</a><br/></span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.currStatus}} ({{order.orderStatus}})</a><br/></span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.total}} ({{order.payType}})</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.total}} ({{order.payType}})</a><br/></span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.total}} ({{order.payType}})</a><br/></span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.restaurants}}</a> </span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.restaurants}}</a> </span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.restaurants}}</a> </span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.driver && order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.driver}}</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.driver}}</a><br/></span>
+			<span ng-show="order.driver && order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.driver}}</a><br/></span>
+			<span ng-show="authLevel > 2 && !order.driver && order.orderStatus > 4 && order.orderStatus < 9"><a href="#/dispatch/{{order.id}}" class="leftNavLink">Dispatch Order ({{authLevel}})</a><br/></span>
+			<span ng-show="!order.driver && order.orderStatus < 5" class="leftNavLinkRed">Pending<br/></span>
+		</div>
+		<div class="col-md-2">
+			<span ng-show="order.orderStatus > 4 && order.orderStatus < 9"><a href="#/orderDetails/{{order.id}}" class="leftNavLink">{{order.destination}}</a><br/></span>
+			<span ng-show="order.orderStatus > 8"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkGreen">{{order.destination}}</a><br/></span>
+			<span ng-show="order.orderStatus < 5"><a href="#/orderDetails/{{order.id}}" class="leftNavLinkRed">{{order.destination}}</a><br/></span>
+		</div>
+	</div>
+</div>

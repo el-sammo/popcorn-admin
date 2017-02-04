@@ -1,0 +1,111 @@
+<div id="fms-items-form" class="col-md-12" ng-cloak>
+	<div class="page-header" ng-show="!item.name && !editMode">
+		<h3>Add Item</h3>
+	</div>
+	<div class="page-header" ng-show="!item.name && editMode">
+		<h3>Update Item</h3>
+	</div>
+	<div class="page-header" ng-show="item.name">
+		<h3>
+			<small>ITEM: </small>
+			{{item.name}} 
+		</h3>
+	</div>
+	<form name="form" class="form-horizontal">
+		<div class="form-group">
+			<label for="name" class="col-md-1 control-label">Item Name</label>
+			<div class="col-md-11">
+				<input 
+					type="text" class="form-control" placeholder="Name"
+					ng-model="item.name" id="name"
+				>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="desc" class="col-md-1 control-label">Description</label>
+			<div class="col-md-11">
+				<input 
+					type="text" class="form-control" placeholder="Authentic Italian Cuisine"
+					ng-model="item.desc" id="desc"
+				>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="active" class="col-md-1 control-label">Active</label>
+			<div class="col-md-9">
+				<input type="radio" ng-model="item.active" id="active" name="active" value="true">Yes<br>
+				<input type="radio" ng-model="item.active" id="active" name="active" value="false">No<br>
+			</div>
+		</div>
+
+		<br/>
+		<br/>
+
+		<div>
+			<img src="{{item.image}}">
+		</div>
+
+		<br/>
+		<br/>
+
+		<div>
+		<div class="form-group">
+			<label for="image" class="col-md-1 control-label">Image</label>
+			<div class="col-md-9">
+				<button
+					ng-hide="imageCropResult||imageCropStep!=1"
+					class="btn btn-primary"
+					ng-click="showImageCropper=true;imageCropStep=1"
+				>Upload Image</button>
+				<button
+					class="btn btn-default" 
+					ng-click="imageCropResult=null;imageCropStep=1"
+				>Reset</button>
+			</div>
+      <image-crop
+         data-width="316"
+         data-height="194"
+         data-shape="square"
+         data-step="imageCropStep"
+         data-result="imageCropResult"
+         ng-show="showImageCropper"
+      ></image-crop>
+		</div>
+
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<!-- Image Upload -->
+
+		<div class="navbar navbar-default navbar-fixed-bottom">
+			<div class="container-fluid">
+				<button
+					type="button" class="btn btn-danger col-md-1" 
+					ng-click="cancel()"
+				>
+					Cancel
+				</button>
+				<button 
+					type="button" class="btn btn-primary col-md-1 pull-right" 
+					ng-click="save(item)"
+				>
+					<i class="fa fa-save"></i> &nbsp;
+					Save
+				</button>
+				<button
+					type="button" class="btn btn-default col-md-1 pull-right" 
+					ng-click="save(item, {addMore: true})"
+					ng-show="!editMode"
+				>
+					More
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
