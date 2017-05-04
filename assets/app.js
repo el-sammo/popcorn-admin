@@ -1750,7 +1750,7 @@
 				var allOrdersTime = 0;
 				var allOrdersCount = 0;
 	
-				var p = $http.get('/orders/daily/');
+				var p = $http.get('/orders/monthly/');
 			
 				p.error(function(err) {
 					console.log('DispatchController: orders-daily ajax failed');
@@ -1909,9 +1909,9 @@
 							'Payment Not Processed',
 							'Payment Declined',
 							'Payment Accepted',
-							'Order Placed',
-							'Order Picked up',
-							'Order En Route',
+							'Order Verified',
+							'Order Made',
+							'Order Packaged',
 							'Order Delivered'
 						];
 		
@@ -2400,6 +2400,20 @@
 			});
 		}
 
+		$scope.setOrderVerified = function(order) {
+			order.orderStatus = parseInt(6);
+			order.orderIngredientsVerifiedAt = new Date().getTime();
+			$http.put(
+				'/orders/' + order.id, order
+			).success(function(data, status, headers, config) {
+				if(status >= 400) return;
+
+				messenger.show('Order verified', '');
+
+				$window.location.href = '#/dispatch/';
+			});
+		}
+
 		$scope.setDispatchReceived = function(order) {
 			order.dispatchReceived = new Date().getTime();
 			$http.put(
@@ -2427,6 +2441,20 @@
 			});
 		}
 
+		$scope.setOrderMade = function(order) {
+			order.orderStatus = parseInt(7);
+			order.orderMadeAt = new Date().getTime();
+			$http.put(
+				'/orders/' + order.id, order
+			).success(function(data, status, headers, config) {
+				if(status >= 400) return;
+
+				messenger.show('Order made', '');
+
+				refreshData();
+			});
+		}
+
 		$scope.setOrderEnRoute = function(order) {
 			order.orderStatus = parseInt(8);
 			order.orderEnRouteAt = new Date().getTime();
@@ -2436,6 +2464,20 @@
 				if(status >= 400) return;
 
 				messenger.show('Order en route', '');
+
+				refreshData();
+			});
+		}
+
+		$scope.setOrderPackaged = function(order) {
+			order.orderStatus = parseInt(8);
+			order.orderPackagedAt = new Date().getTime();
+			$http.put(
+				'/orders/' + order.id, order
+			).success(function(data, status, headers, config) {
+				if(status >= 400) return;
+
+				messenger.show('Order packaged', '');
 
 				refreshData();
 			});

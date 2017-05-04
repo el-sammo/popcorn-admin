@@ -59,7 +59,7 @@ module.exports = {
 	},
 	
 	allTime: function(req, res) {
-		Customers.find({areaId: req.params.id}).sort({createdAt: 'asc'}).then(function(results) {
+		Customers.find({}).sort({createdAt: 'asc'}).then(function(results) {
 			res.send(JSON.stringify(results));
 		}).catch(function(err) {
       res.json({error: 'Server error'}, 500);
@@ -78,7 +78,7 @@ module.exports = {
 		var todayMilliseconds = new Date(thisYear, thisMonth, thisDate, 0, 0, 0, 0).getTime();
 		var todayOnly = new Date(todayMilliseconds);
 
-		Customers.find({areaId: req.params.id, createdAt: { '>=': todayOnly}}).sort({createdAt: 'asc'}).then(function(results) {
+		Customers.find({createdAt: { '>=': todayOnly}}).sort({createdAt: 'asc'}).then(function(results) {
 			res.send(JSON.stringify(results));
 		}).catch(function(err) {
       res.json({error: 'Server error'}, 500);
@@ -92,7 +92,7 @@ module.exports = {
 		var yesterday = ts - (7 * 24 * 3600000);
 		var yesterdayDate = new Date(yesterday);
 
-		Customers.find({areaId: req.params.id, createdAt: { '>=': yesterdayDate}}).sort({createdAt: 'asc'}).then(function(results) {
+		Customers.find({createdAt: { '>=': yesterdayDate}}).sort({createdAt: 'asc'}).then(function(results) {
 			res.send(JSON.stringify(results));
 		}).catch(function(err) {
       res.json({error: 'Server error'}, 500);
@@ -106,7 +106,7 @@ module.exports = {
 		var yesterday = ts - (24 * 3600000 * 28);
 		var yesterdayDate = new Date(yesterday);
 
-		Customers.find({areaId: req.params.id, createdAt: { '>=': yesterdayDate}}).sort({createdAt: 'asc'}).then(function(results) {
+		Customers.find({createdAt: { '>=': yesterdayDate}}).sort({createdAt: 'asc'}).then(function(results) {
 			res.send(JSON.stringify(results));
 		}).catch(function(err) {
       res.json({error: 'Server error'}, 500);

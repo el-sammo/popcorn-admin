@@ -18,11 +18,10 @@
 		</div>
 		<div class="col-md-2">
 			<br/>
-			<span class="orderActionLink" ng-show="orderStatus < 6" ng-click="setOrderPlaced(order)">Set Order Placed</span>
-			<span class="orderActionLink" ng-show="dispatchReceived < 1 && orderStatus > 5 && orderStatus < 7" ng-click="setDispatchReceived(order)">Confirm Dispatch</span>
-			<span class="orderActionLink" ng-show="orderStatus > 5 && orderStatus < 7 && dispatchReceived > 1" ng-click="setOrderCollected(order)">Set Order Collected</span>
-			<span class="orderActionLink" ng-show="orderStatus > 6 && orderStatus < 8 && dispatchReceived > 1" ng-click="setOrderEnRoute(order)">Set Order En Route</span>
-			<span class="orderActionLink" ng-show="orderStatus > 7 && orderStatus < 9 && dispatchReceived > 1" ng-click="setOrderDelivered(order)">Set Order Delivered</span>
+			<span class="orderActionLink" ng-show="orderStatus > 4 && orderStatus < 6" ng-click="setOrderVerified(order)">Set Order Ingredients Verified</span>
+			<span class="orderActionLink" ng-show="orderStatus > 5 && orderStatus < 7" ng-click="setOrderMade(order)">Set Order Made</span>
+			<span class="orderActionLink" ng-show="orderStatus > 6 && orderStatus < 8" ng-click="setOrderPackaged(order)">Set Order Packaged</span>
+			<span class="orderActionLink" ng-show="orderStatus > 7 && orderStatus < 9" ng-click="setOrderDelivered(order)">Set Order Delivered</span>
 		</div>
 		<div class="col-md-2">
 			&nbsp;
